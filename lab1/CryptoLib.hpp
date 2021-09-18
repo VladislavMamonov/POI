@@ -6,6 +6,7 @@
 
 using namespace std;
 
+typedef unsigned long long int uint64;
 
 enum Clients
 {
@@ -14,6 +15,15 @@ enum Clients
     B_C,
 };
 
-unsigned long long int FME(unsigned long long int a, unsigned long long int x, unsigned long long int p);
+uint64 ipow(uint64 a, uint64 n);
+
+bool isPrime(uint64 p);
+
+uint64 FME(uint64 a, uint64 x, uint64 p);
+
 int GCD(int a, int b, int &x, int &y);
-unsigned long long int DH(Clients pair);
+
+uint64 DH(uint64 q, uint64 p, uint64 g, uint64 Xa,
+    uint64 Xb, uint64 Xc, Clients pair);
+
+uint64 BSGS(uint64 a, uint64 p, uint64 y);

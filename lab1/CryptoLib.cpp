@@ -1,23 +1,23 @@
 #include "CryptoLib.hpp"
 
 
-unsigned long long int ipow(unsigned long long int a, unsigned long long int n)
+uint64 ipow(uint64 a, uint64 n)
 {
-    unsigned long long int r = 1;
+    uint64 r = 1;
 
-    for (unsigned long long int i = 0; i < n; i++) r *= a;
+    for (uint64 i = 0; i < n; i++) r *= a;
 
     return r;
 }
 
 
-bool isPrime(unsigned long long int p)
+bool isPrime(uint64 p)
 {
    if (p <= 1) return false;
 
-   unsigned long long int b = pow(p, 0.5);
+   uint64 b = pow(p, 0.5);
 
-   for (unsigned long long int i = 2; i <= b; ++i) {
+   for (uint64 i = 2; i <= b; ++i) {
       if ((p % i) == 0) return false;
    }
 
@@ -26,22 +26,22 @@ bool isPrime(unsigned long long int p)
 
 
 
-unsigned long long int FME(unsigned long long int a, unsigned long long int x, unsigned long long int p)
+uint64 FME(uint64 a, uint64 x, uint64 p)
 {
     if (p <= 0) {
         cout << "incorrect p" << endl;
         return -1;
     }
 
-    unsigned long long int y;
-    vector<unsigned long long int> bin;
-    vector<unsigned long long int> num_decomposition;
-    vector<unsigned long long int> mod_p;
+    uint64 y;
+    vector<uint64> bin;
+    vector<uint64> num_decomposition;
+    vector<uint64> mod_p;
 
 
     //Шаг 1. Разложим x на степени 2, записав его в двоичном виде
-    unsigned long long int last_bit;
-    unsigned long long int x_temp = x;
+    uint64 last_bit;
+    uint64 x_temp = x;
 
     while (x_temp != 0)
     {
@@ -58,10 +58,10 @@ unsigned long long int FME(unsigned long long int a, unsigned long long int x, u
 
 
     // Шаг 2. Вычисляем mod p степеней двойки ≤ x
-    unsigned long long int res;
-    vector<unsigned long long int> multiplier;
+    uint64 res;
+    vector<uint64> multiplier;
 
-    for (unsigned long long int i = 0; i < bin.size(); i++)
+    for (uint64 i = 0; i < bin.size(); i++)
     {
         if (i == 0) {
             res = a % p;
@@ -120,54 +120,34 @@ int GCD(int a, int b, int &x, int &y)
 }
 
 
-unsigned long long int DH(Clients pair)
+uint64 DH(uint64 q, uint64 p,
+    uint64 g, uint64 Xa,
+    uint64 Xb, uint64 Xc, Clients pair)
 {
-    unsigned long long int q;
-    unsigned long long int p;
-    srand(time(NULL));
+    uint64 Ya = FME(g, Xa, p);
+    uint64 Yb = FME(g, Xb, p);
+    uint64 Yc = FME(g, Xc, p);
 
-    unsigned long long int range = ipow(10, 9);
-    do {
-        q = rand() % range;
-        p = 2 * q + 1;
-    } while (isPrime(q) == false || (isPrime(p) == false));
-
-    int g = 2;
-
-    while (true) {
-        if (FME(g, q, p) != 1) break;
-        g++;
-    }
-
-    unsigned long long int Xa = rand() % ULLONG_MAX;
-    unsigned long long int Xb = rand() % ULLONG_MAX;
-    unsigned long long int Xc = rand() % ULLONG_MAX;
-
-    unsigned long long int Ya = FME(g, Xa, p);
-    unsigned long long int Yb = FME(g, Xb, p);
-    unsigned long long int Yc = FME(g, Xc, p);
-
-    // Формируем общий секретный ключ A с B
-
+    // Формируем общий секретный ключ
     switch (pair)
     {
         case A_B: {
-            unsigned long long int Zab = FME(Yb, Xa, p);
-            unsigned long long int Zba = FME(Ya, Xb, p);
+            uint64 Zab = FME(Yb, Xa, p);
+            uint64 Zba = FME(Ya, Xb, p);
             return Zab;
             break;
         }
 
         case A_C: {
-            unsigned long long int Zac = FME(Yc, Xa, p);
-            unsigned long long int Zca = FME(Ya, Xc, p);
+            uint64 Zac = FME(Yc, Xa, p);
+            uint64 Zca = FME(Ya, Xc, p);
             return Zac;
             break;
         }
 
         case B_C: {
-            unsigned long long int Zbc = FME(Yc, Xb, p);
-            unsigned long long int Zcb = FME(Yb, Xc, p);
+            uint64 Zbc = FME(Yc, Xb, p);
+            uint64 Zcb = FME(Yb, Xc, p);
             return Zbc;
             break;
         }
@@ -177,4 +157,44 @@ unsigned long long int DH(Clients pair)
             return -1;
             break;
     }
+}
+
+
+uint64 BSGS(uint64 a, uint64 p, uint64 y)
+{
+    uint64 x;
+    uint64 m;
+    uint64 k;
+    vector<uint64> b;
+    vector<uint64> g;
+    uint64 i;
+    uint64 j;
+
+    m = sqrtl(p) + 1;
+    k = sqrtl(p) + 1;
+
+    for (uint64 i = 0; i <= (m - 1); i++) {
+        b.push_back((ipow(a, i) * y) % p);
+    }
+
+    for (uint64 j = 1; j <= k; j++) {
+        g.push_back(ipow(a, (j * m)) % p);
+    }
+
+    bool break_flag = false;
+
+    for (i = 0; i < b.size(); i++) {
+        if (break_flag == true) { i -= 1; break; }
+        for (j = 0; j < g.size(); j++) {
+            if (b[i] == g[j]) {
+                j += 1;
+                break_flag = true;
+                break;
+            }
+        }
+    }
+
+    x = j * m - i;
+
+    return x;
 }
