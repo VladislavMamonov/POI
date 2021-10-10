@@ -1,11 +1,11 @@
 #include "CryptoLib.hpp"
 
 
-uint64 ipow(uint64 a, uint64 n)
+int64 ipow(int64 a, int64 n)
 {
-    uint64 r = 1;
+    int64 r = 1;
 
-    for (uint64 i = 0; i < n; i++) r *= a;
+    for (int64 i = 0; i < n; i++) r *= a;
 
     return r;
 }
@@ -23,7 +23,6 @@ bool isPrime(uint64 p)
 
    return true;
 }
-
 
 
 uint64 FME(uint64 a, uint64 x, uint64 p)
@@ -86,19 +85,19 @@ uint64 FME(uint64 a, uint64 x, uint64 p)
 }
 
 
-int GCD(int a, int b, int &x, int &y)
+int64 GCD(int64 a, int64 b, int64 &x, int64 &y)
 {
     if (a < b) {
-        int a_temp = a;
+        int64 a_temp = a;
         a = b;
         b = a_temp;
     }
 
-    int u1 = a; int u2 = 1; int u3 = 0;
-    int v1 = b; int v2 = 0; int v3 = 1;
-    int t1; int t2; int t3;
-    int q;
-    int gcd;
+    int64 u1 = a; int64 u2 = 1; int64 u3 = 0;
+    int64 v1 = b; int64 v2 = 0; int64 v3 = 1;
+    int64 t1; int64 t2; int64 t3;
+    int64 q;
+    int64 gcd;
 
     while ((u1 && v1) != 0)
     {
@@ -162,39 +161,70 @@ uint64 DH(uint64 q, uint64 p,
 
 uint64 BSGS(uint64 a, uint64 p, uint64 y)
 {
-    uint64 x;
-    uint64 m;
-    uint64 k;
-    vector<uint64> b;
-    vector<uint64> g;
-    uint64 i;
-    uint64 j;
-
-    m = sqrtl(p) + 1;
-    k = sqrtl(p) + 1;
-
-    for (uint64 i = 0; i <= (m - 1); i++) {
-        b.push_back((ipow(a, i) * y) % p);
+    uint64 n = (uint64) sqrt(p + .0) + 1;
+    map<uint64, uint64> vals;
+    for (int i = n; i >= 1; --i) {
+        vals[FME(a, i * n, p)] = i;
     }
+    for (int i = 0; i <= n; ++i) {
+        int cur;
+        if (i == 0) cur = y % p;
+        else cur = (FME(a, i, p) * y) % p;
 
-    for (uint64 j = 1; j <= k; j++) {
-        g.push_back(ipow(a, (j * m)) % p);
-    }
-
-    bool break_flag = false;
-
-    for (i = 0; i < b.size(); i++) {
-        if (break_flag == true) { i -= 1; break; }
-        for (j = 0; j < g.size(); j++) {
-            if (b[i] == g[j]) {
-                j += 1;
-                break_flag = true;
-                break;
-            }
+        if (vals.count(cur)) {
+            uint64 res = vals[cur] * n - i;
+            if (res < p) return res;
         }
     }
+    return 0;
+}
 
-    x = j * m - i;
 
-    return x;
+bool miller_rabin_test(unsigned long long int n, int r)
+{
+    if (n == 2 || n == 3) return true;
+    if (n < 2 || n % 2 == 0) return false;
+
+    unsigned long long int t = n - 1;
+
+    int s = 0;
+
+    while (t % 2 == 0)
+    {
+        t /= 2;
+        s++;
+    }
+
+    for (int i = 0; i < r; i++)
+    {
+        unsigned long long int a = rand() % (n - 2) + 2;
+
+        unsigned long long int x = FME(a, t, n);
+
+        if(x == 1 || x == n - 1) continue;
+
+        for (int j = 1; j < s; j++)
+        {
+            x = FME(x, 2, n);
+
+            if (x == 1) return false;
+            if (x == n - 1) break;
+        }
+
+        if (x != n - 1) return false;
+    }
+
+    return true;
+}
+
+
+unsigned long long int rand_prime()
+{
+    unsigned long long int t;
+    do
+    {
+        t = rand();
+    } while (!(miller_rabin_test(t, 10)));
+
+    return t;
 }

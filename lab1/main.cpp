@@ -3,12 +3,13 @@
 
 int main()
 {
+    srand(time(NULL));
     uint64 FME_res;
     FME_res = FME(999999998, 999999999, 999999999);
     cout << "FME: " << FME_res << endl;
 
-    int GCD_a = 15; int GCD_b = 4; int GCD_x; int GCD_y;
-    int gcd;
+    int64 GCD_a = rand(); int64 GCD_b = rand(); int64 GCD_x; int64 GCD_y;
+    int64 gcd;
     gcd = GCD(GCD_a, GCD_b, GCD_x, GCD_y);
     cout << "GCD: x = " << GCD_x << ", y = " << GCD_y << ", gcd = " << gcd << endl;
 
@@ -16,7 +17,6 @@ int main()
     // DH
     uint64 q;
     uint64 p;
-    srand(time(NULL));
 
     uint64 range = ipow(10, 9);
     do {
@@ -24,11 +24,11 @@ int main()
         p = 2 * q + 1;
     } while (isPrime(q) == false || (isPrime(p) == false));
 
-    int g = 2;
+    int g = rand();
 
     while (true) {
         if (FME(g, q, p) != 1) break;
-        g++;
+        g = rand();
     }
 
     uint64 Xa = rand();
@@ -41,7 +41,7 @@ int main()
 
 
     // -------
-    cout << "BSGS = " << BSGS(5, 23, 2) << endl;
+    cout << "BSGS = " << BSGS(rand(), rand(), rand()) << endl;
 
     return 0;
 }
