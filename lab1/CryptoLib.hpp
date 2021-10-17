@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <climits>
+#include <sstream>
 #include <map>
 
 using namespace std;
@@ -31,7 +32,3 @@ uint64 DH(uint64 q, uint64 p, uint64 g, uint64 Xa,
 uint64 BSGS(uint64 a, uint64 p, uint64 y);
 
 int64 Shamir(int64 m);
-
-bool miller_rabin_test(unsigned long long int n, int r);
-
-unsigned long long int rand_prime();
