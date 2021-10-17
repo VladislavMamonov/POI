@@ -31,4 +31,12 @@ uint64 DH(uint64 q, uint64 p, uint64 g, uint64 Xa,
 
 uint64 BSGS(uint64 a, uint64 p, uint64 y);
 
+void DataSplit(int64 m, vector<int64> &m_parts);
+
 int64 Shamir(int64 m);
+
+int64 ElGamal(int64 m, int64 p, int64 g);
+
+void Vernam(int64 m, vector<int64> &m_decrypted);
+
+int64 RSA(int64 m, int64 p, int64 q);
