@@ -54,16 +54,16 @@ int main()
 
 
     // RSA
+    int64 q;
     do {
         do {
             p = rand() % 10000;
         } while (isPrime(p) != true);
 
-        int64 q;
         do {
             q = rand() % 10000;
         } while (isPrime(q) != true);
-    } while (p == q)
+    } while (p == q);
 
     cout << "RSA decrypted: " << RSA(m, p, q) << endl;
 
