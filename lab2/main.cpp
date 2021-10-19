@@ -1,4 +1,5 @@
 #include "../lab1/CryptoLib.hpp"
+#include "myfstream.hpp"
 
 
 void PG_generation(int64 *p, int64 *g)
@@ -23,34 +24,51 @@ int main()
 {
     // Шамир
     srand(time(NULL));
-    int64 m = 8232421412412494;
-    int64 m2;
+    //int64 m = 423423453453453;
+    vector<int64> m;
+    m = make_m();
+    vector<int64> vec_shamir;
+    vector<int64> vec_ElGamal;
+    vector<int64> vec_vernam;
+    vector<int64> vec_RSA;
 
-    cout << "source message: " << m << endl;
+    // cout << "source message: " << m << endl;
 
-    for (int i = 0; i < 100; i++) {
-        m2 = Shamir(m);
-        if (m2 != m) {
-            cout << "i = " << i << "*" << endl;
-        }
-    }
+    vec_shamir = Shamir(m);
+
+    for (int i = 0; i < m.size(); i++)
+        cout << m[i];
+    cout << endl << endl << endl;
+
+    for (int i = 0; i < vec_shamir.size(); i++)
+        cout << vec_shamir[i];
+    cout << endl << endl << endl;
+
+    put_fileOut(vec_shamir, "res_shamir.txt");
+
 
     // Эль Гамаль
     int64 p;
     int64 g;
 
     PG_generation(&p, &g);
-    cout << "El Gamal decrypted: " << ElGamal(m, p, g) << endl;
+    vec_ElGamal = ElGamal(m, p, g);
+
+    for (int i = 0; i < vec_ElGamal.size(); i++)
+        cout << vec_ElGamal[i];
+    cout << endl << endl << endl;
+
+    put_fileOut(vec_ElGamal, "res_ElGamal.txt");
+
 
     // Вернам
-    vector<int64> m_decrypted;
-    Vernam(m, m_decrypted);
+    vec_vernam = Vernam(m);
 
-    cout << "Vernam decrypted: ";
+    for (int i = 0; i < vec_vernam.size(); i++)
+        cout << vec_vernam[i];
+    cout << endl << endl << endl;
 
-    for (int i = 0; i < m_decrypted.size(); i++)
-        cout << m_decrypted[i];
-    cout << endl;
+    put_fileOut(vec_vernam, "res_vernam.txt");
 
 
     // RSA
@@ -65,7 +83,12 @@ int main()
         } while (isPrime(q) != true);
     } while (p == q);
 
-    cout << "RSA decrypted: " << RSA(m, p, q) << endl;
+    vec_RSA = RSA(m, p, q);
+
+    for (int i = 0; i < vec_RSA.size(); i++)
+        cout << vec_RSA[i];
+
+    put_fileOut(vec_RSA, "res_RSA.txt");
 
     return 0;
 }

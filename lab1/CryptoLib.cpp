@@ -11,13 +11,13 @@ int64 ipow(int64 a, int64 n)
 }
 
 
-bool isPrime(uint64 p)
+bool isPrime(int64 p)
 {
    if (p <= 1) return false;
 
-   uint64 b = pow(p, 0.5);
+   int64 b = pow(p, 0.5);
 
-   for (uint64 i = 2; i <= b; ++i) {
+   for (int64 i = 2; i <= b; ++i) {
       if ((p % i) == 0) return false;
    }
 
@@ -25,22 +25,22 @@ bool isPrime(uint64 p)
 }
 
 
-uint64 FME(uint64 a, uint64 x, uint64 p)
+int64 FME(int64 a, int64 x, int64 p)
 {
     if (p <= 0) {
         cout << "incorrect p" << endl;
         return -1;
     }
 
-    uint64 y;
-    vector<uint64> bin;
-    vector<uint64> num_decomposition;
-    vector<uint64> mod_p;
+    int64 y;
+    vector<int64> bin;
+    vector<int64> num_decomposition;
+    vector<int64> mod_p;
 
 
     //Шаг 1. Разложим x на степени 2, записав его в двоичном виде
-    uint64 last_bit;
-    uint64 x_temp = x;
+    int64 last_bit;
+    int64 x_temp = x;
 
     while (x_temp != 0)
     {
@@ -57,10 +57,10 @@ uint64 FME(uint64 a, uint64 x, uint64 p)
 
 
     // Шаг 2. Вычисляем mod p степеней двойки ≤ x
-    uint64 res;
-    vector<uint64> multiplier;
+    int64 res;
+    vector<int64> multiplier;
 
-    for (uint64 i = 0; i < bin.size(); i++)
+    for (int64 i = 0; i < bin.size(); i++)
     {
         if (i == 0) {
             res = a % p;
@@ -119,34 +119,34 @@ int64 GCD(int64 a, int64 b, int64 &x, int64 &y)
 }
 
 
-uint64 DH(uint64 q, uint64 p,
-    uint64 g, uint64 Xa,
-    uint64 Xb, uint64 Xc, Clients pair)
+int64 DH(int64 q, int64 p,
+    int64 g, int64 Xa,
+    int64 Xb, int64 Xc, Clients pair)
 {
-    uint64 Ya = FME(g, Xa, p);
-    uint64 Yb = FME(g, Xb, p);
-    uint64 Yc = FME(g, Xc, p);
+    int64 Ya = FME(g, Xa, p);
+    int64 Yb = FME(g, Xb, p);
+    int64 Yc = FME(g, Xc, p);
 
     // Формируем общий секретный ключ
     switch (pair)
     {
         case A_B: {
-            uint64 Zab = FME(Yb, Xa, p);
-            uint64 Zba = FME(Ya, Xb, p);
+            int64 Zab = FME(Yb, Xa, p);
+            int64 Zba = FME(Ya, Xb, p);
             return Zab;
             break;
         }
 
         case A_C: {
-            uint64 Zac = FME(Yc, Xa, p);
-            uint64 Zca = FME(Ya, Xc, p);
+            int64 Zac = FME(Yc, Xa, p);
+            int64 Zca = FME(Ya, Xc, p);
             return Zac;
             break;
         }
 
         case B_C: {
-            uint64 Zbc = FME(Yc, Xb, p);
-            uint64 Zcb = FME(Yb, Xc, p);
+            int64 Zbc = FME(Yc, Xb, p);
+            int64 Zcb = FME(Yb, Xc, p);
             return Zbc;
             break;
         }
@@ -159,10 +159,10 @@ uint64 DH(uint64 q, uint64 p,
 }
 
 
-uint64 BSGS(uint64 a, uint64 p, uint64 y)
+int64 BSGS(int64 a, int64 p, int64 y)
 {
-    uint64 n = (uint64) sqrt(p + .0) + 1;
-    map<uint64, uint64> vals;
+    int64 n = (int64) sqrt(p + .0) + 1;
+    map<int64, int64> vals;
     for (int i = n; i >= 1; --i) {
         vals[FME(a, i * n, p)] = i;
     }
@@ -172,7 +172,7 @@ uint64 BSGS(uint64 a, uint64 p, uint64 y)
         else cur = (FME(a, i, p) * y) % p;
 
         if (vals.count(cur)) {
-            uint64 res = vals[cur] * n - i;
+            int64 res = vals[cur] * n - i;
             if (res < p) return res;
         }
     }
